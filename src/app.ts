@@ -3,7 +3,7 @@ import logger from "./config/logger.js";
 import type { HttpError } from "http-errors";
 const app = express();
 app.get("/", (req, res) => {
-    res.send("Welcome to the Auth Service");
+    res.send("<h1>Welcome to the Auth Service</h1>");
 });
 // Error handling middleware
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
