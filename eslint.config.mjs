@@ -14,7 +14,9 @@ export default defineConfig(
       },
     },
 
-    rules: {},
+    rules: {
+        "dot-notation": "error",
+    },
   },
   {
     ignores: ["dist/**", "node_modules","eslint.config.mjs" ],
