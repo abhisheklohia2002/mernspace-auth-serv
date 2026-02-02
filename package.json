@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "The user management Service",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "lint:check": " eslint .",
     "lint:fix": " eslint . --fix",
@@ -25,5 +26,8 @@
     "*.ts": [
       "npm run lint:fix"
     ]
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3"
   }
 }
