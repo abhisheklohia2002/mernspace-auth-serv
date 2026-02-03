@@ -2,6 +2,8 @@ import { type NextFunction, type Response } from "express";
 import type { RegisterRequestBody } from "../types/index.js";
 import type { UserService } from "../services/userService.js";
 import type { Logger } from "winston";
+import createHttpError from "http-errors";
+import { validationResult } from "express-validator";
 
 export class AuthController {
   constructor(
@@ -9,12 +11,21 @@ export class AuthController {
     private logger: Logger,
   ) {}
   async register(req: RegisterRequestBody, res: Response, next: NextFunction) {
-    const { firstName, lastName, email,role } = req.body;
+    const result = validationResult(req);
+    if (!result.isEmpty()) {
+      res.status(400).json({error:result.array()});
+    }
+    const { firstName, lastName, email, role } = req.body;
+    if (!email) {
+      const error = createHttpError(400, "Email is required");
+      next(error);
+      return;
+    }
     this.logger.debug("New Request to register a user", {
       firstName,
       lastName,
       email,
-      role
+      role,
     });
     try {
       const user = await this.userService.createUser(req.body);
