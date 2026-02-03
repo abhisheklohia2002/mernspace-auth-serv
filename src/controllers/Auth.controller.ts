@@ -9,11 +9,12 @@ export class AuthController {
     private logger: Logger,
   ) {}
   async register(req: RegisterRequestBody, res: Response, next: NextFunction) {
-    const { firstName, lastName, email } = req.body;
+    const { firstName, lastName, email,role } = req.body;
     this.logger.debug("New Request to register a user", {
       firstName,
       lastName,
       email,
+      role
     });
     try {
       const user = await this.userService.createUser(req.body);

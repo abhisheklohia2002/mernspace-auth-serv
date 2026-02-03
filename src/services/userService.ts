@@ -5,13 +5,14 @@ import createHttpError from "http-errors";
 
 export class UserService {
   constructor(private readonly userRepository: Repository<User>) {}
-  async createUser({ firstName, lastName, email, password }: UserData) {
+  async createUser({ firstName, lastName, email, password,role }: UserData) {
     try {
       await this.userRepository.save({
         firstName,
         lastName,
         email,
         password,
+        role
       });
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars

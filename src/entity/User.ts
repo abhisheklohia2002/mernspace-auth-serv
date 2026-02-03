@@ -1,4 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { UserRole } from "../constants/index.js";
 
 @Entity()
 export class User {
@@ -16,4 +17,7 @@ export class User {
 
   @Column({ type: "varchar", length: 255 })
   password: string;
+
+  @Column({ type: "varchar",enum:UserRole })
+  role: string;
 }
