@@ -19,6 +19,6 @@ export default defineConfig(
     },
   },
   {
-    ignores: ["dist/**", "node_modules","eslint.config.mjs","package.json","jest.config.mjs","tsconfig.json" ],
+    ignores: ["dist/**", "node_modules","eslint.config.mjs","package.json","jest.config.mjs","tsconfig.json",  ],
   },
 );

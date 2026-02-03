@@ -1,14 +1,15 @@
+import "reflect-metadata";
 import express, { type NextFunction ,type Response,type Request} from "express";
 import logger from "./config/logger.js";
 import type { HttpError } from "http-errors";
 import router from "./routes/auth.js";
-import "reflect-metadata"
 const app = express();
 app.get("/", (req, res) => {
     res.send("<h1>Welcome to the Auth Service</h1>");
 });
 
-
+app.use(express.json());
+app.use("/api/auth",router)
 // Error handling middleware
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use((err:HttpError,req:Request,res:Response,next:NextFunction)=>{
@@ -25,5 +26,5 @@ app.use((err:HttpError,req:Request,res:Response,next:NextFunction)=>{
        ] 
     })
 })
-app.use("/api/auth",router)
+
 export default app;
