@@ -5,8 +5,6 @@ import type { UserService } from "../services/userService.js";
 import type { Logger } from "winston";
 import createHttpError from "http-errors";
 import { validationResult } from "express-validator";
-import { AppDataSource } from "../config/data-source.js";
-import { RefreshToken } from "../entity/RefreshToken.js";
 import type TokenService from "../services/TokenService.js";
 import type { JwtPayload } from "jsonwebtoken";
 export class AuthController {
@@ -42,13 +40,7 @@ export class AuthController {
       };
       const accessToken = this.tokenService.generateAccessToken(payload)
 
-      //persist the data
-      const MS_IN_YEAR = 1000 * 60 * 60 * 24 * 365;
-      const refreshTokenRepository = AppDataSource.getRepository(RefreshToken);
-      const newRefeshToken = await refreshTokenRepository.save({
-        user: user,
-        expiresAt: new Date(Date.now() + MS_IN_YEAR),
-      });
+      const newRefeshToken = await this.tokenService.persistRefreshToken(user)
       const refreshToken = this.tokenService.generateRefreshToken(payload,String(newRefeshToken.id))
 
       res.cookie("accessToken", accessToken, {
