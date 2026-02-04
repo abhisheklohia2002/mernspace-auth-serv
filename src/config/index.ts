@@ -12,7 +12,6 @@ const envPath = path.resolve(__dirname, `../../.env.${env}`);
 
 
 config({ path: envPath });
-
 export const Config = {
   DB_HOST: process.env.DB_HOST,
   DB_PORT: process.env.DB_PORT,
@@ -21,4 +20,5 @@ export const Config = {
   DB_NAME: process.env.DB_NAME,
   NODE_ENV: process.env.NODE_ENV,
   PORT: process.env.PORT,
+  SECRET_KEY:process.env.REFRESH_TOKEN_SECRET
 };

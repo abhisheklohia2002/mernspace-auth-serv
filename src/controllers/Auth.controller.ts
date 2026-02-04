@@ -8,6 +8,8 @@ import jwt from "jsonwebtoken"
 import fs from "fs"
 import path from "path";
 import { validationResult } from "express-validator";
+import { Config } from "../config/index.js";
+import { AuthService } from "../constants/index.js";
 export class AuthController {
   constructor(
     private readonly userService: UserService,
@@ -40,22 +42,26 @@ export class AuthController {
       const accessToken = jwt.sign(payload,privateKey,{
         algorithm:'RS256',
         expiresIn:"1h",
-        issuer:'auth-service',
+        issuer:AuthService.AUTHSERVICE
        
       })
-      const refreshToken = "dscsdsf"
+      const refreshToken = jwt.sign(payload,Config.SECRET_KEY!,{
+        algorithm:'HS256',
+        expiresIn:"1yr",
+        issuer:AuthService.AUTHSERVICE
+      })
 
       res.cookie("accessToken",accessToken,{
         domain:'localhost',
         sameSite:"strict",
         httpOnly:true,
-        maxAge:1000 * 60 * 60
+        maxAge:1000 * 60 * 60 // one hour
       })
        res.cookie("refreshToken",refreshToken,{
         domain:'localhost',
         sameSite:"strict",
         httpOnly:true,
-        maxAge:1000 *  60 * 60 * 24 * 365
+        maxAge:1000 *  60 * 60 * 24 * 365 // one Year
       })
       res.status(201).json({ message: "User registered successfully" });
     } catch (error) {
