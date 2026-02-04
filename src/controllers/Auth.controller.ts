@@ -4,13 +4,11 @@ import type { RegisterRequestBody } from "../types/index.js";
 import type { UserService } from "../services/userService.js";
 import type { Logger } from "winston";
 import createHttpError from "http-errors";
-import jwt, { type JwtPayload } from "jsonwebtoken";
 import { validationResult } from "express-validator";
-import { Config } from "../config/index.js";
-import { AuthService } from "../constants/index.js";
 import { AppDataSource } from "../config/data-source.js";
 import { RefreshToken } from "../entity/RefreshToken.js";
 import type TokenService from "../services/TokenService.js";
+import type { JwtPayload } from "jsonwebtoken";
 export class AuthController {
   constructor(
     private readonly userService: UserService,
@@ -51,12 +49,7 @@ export class AuthController {
         user: user,
         expiresAt: new Date(Date.now() + MS_IN_YEAR),
       });
-      const refreshToken = jwt.sign(payload, Config.SECRET_KEY!, {
-        algorithm: "HS256",
-        expiresIn: "1yr",
-        issuer: AuthService.AUTHSERVICE,
-        jwtid: String(newRefeshToken.id),
-      });
+      const refreshToken = this.tokenService.generateRefreshToken(payload,String(newRefeshToken.id))
 
       res.cookie("accessToken", accessToken, {
         domain: "localhost",
