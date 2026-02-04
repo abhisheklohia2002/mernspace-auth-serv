@@ -1,4 +1,3 @@
-
 import express, {
   type NextFunction,
   type Request,
@@ -21,6 +20,6 @@ router.post(
   "/register",
   register,
   (req: Request, res: Response, next: NextFunction) =>
-    authController.register(req, res, next),
+    authController.register(req, res, next)
 );
 export default router;
