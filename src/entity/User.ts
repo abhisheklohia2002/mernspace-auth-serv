@@ -1,4 +1,10 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from "typeorm";
 import { UserRole } from "../constants/index.js";
 
 @Entity()
@@ -18,6 +24,12 @@ export class User {
   @Column({ type: "varchar", length: 255 })
   password: string;
 
-  @Column({ type: "varchar",enum:UserRole })
+  @Column({ type: "varchar", enum: UserRole })
   role: string;
+
+  @UpdateDateColumn()
+  updateAt: number;
+
+  @CreateDateColumn()
+  createAt: number;
 }

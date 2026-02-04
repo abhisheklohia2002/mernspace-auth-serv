@@ -19,13 +19,14 @@ export class UserService {
         const error = createHttpError(400, "email is already existed");
         throw error;
       }
-      await this.userRepository.save({
+    const user =   await this.userRepository.save({
         firstName,
         lastName,
         email,
         password: await this.hashPassword(password),
         role,
       });
+      return user;
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
