@@ -16,10 +16,9 @@ export class UserService {
         where: { email },
       });
       if (isUserExist) {
-        const error = createHttpError(400, "email is already existed");
-        throw error;
+        throw createHttpError(400, "Email already exists");
       }
-    const user =   await this.userRepository.save({
+      const user = await this.userRepository.save({
         firstName,
         lastName,
         email,
@@ -28,13 +27,12 @@ export class UserService {
       });
       return user;
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    } catch (error) {
-      const err = createHttpError(
-        500,
-        `Failed to store data into the database`,
-      );
-      throw err;
+       
+    } catch (error: unknown) {
+      if (createHttpError.isHttpError(error)) {
+        throw error;
+      }
+      throw createHttpError(500, "Failed to store data into the database");
     }
   }
 }

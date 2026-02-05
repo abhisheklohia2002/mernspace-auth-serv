@@ -14,7 +14,7 @@ export default class TokenService {
 
   generateAccessToken(payload: JwtPayload) {
     const privateKey = fs.readFileSync(
-      path.join(__dirname, "../../certs/private.pem"),
+      path.join(__dirname, "../../certs/public.pem"),
     );
     const accessToken = jwt.sign(payload, privateKey, {
       algorithm: "RS256",
