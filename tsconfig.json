@@ -9,7 +9,7 @@
     // See also https://aka.ms/tsconfig/module
     "module": "nodenext",
     "target": "esnext",
-    "types": ["jest","node"],
+    "types": ["jest", "node"],
     // For nodejs:
     "lib": ["es6"], //es6 or later
     // "types": ["node"],
@@ -42,7 +42,8 @@
     "skipLibCheck": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "strictPropertyInitialization": false,
-    
+    "strictPropertyInitialization": false
   },
+  // "include": ["src/**/*.ts"],
+  // "exclude": ["tests", "**/*.spec.ts", "**/*.test.ts"]
 }

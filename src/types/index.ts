@@ -12,9 +12,12 @@ export interface RegisterRequestBody extends Request {
 }
 
 export interface AuthRequest extends Request {
-  auth :{
-    id:string,
-    role:number,
-
-  }
+  auth?: {
+    sub: number;
+    email: string;
+    role: string;
+    iat?: number;
+    exp?: number;
+    iss?: string;
+  };
 }

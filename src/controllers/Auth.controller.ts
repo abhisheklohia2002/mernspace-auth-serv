@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { type NextFunction, type Response } from "express";
 import type { AuthRequest, RegisterRequestBody } from "../types/index.js";
 import type { UserService } from "../services/userService.js";
@@ -35,7 +36,7 @@ export class AuthController {
       this.logger.info(`User has been Registerd`, { user });
       const payload: JwtPayload = {
         email,
-        user: user.id,
+        sub: String(user.id),
         role: user.role,
       };
       const accessToken = this.tokenService.generateAccessToken(payload);
@@ -71,7 +72,7 @@ export class AuthController {
       const isUserExisted = await this.userService.loginUser(req.body);
       const payload: JwtPayload = {
         email,
-        user: isUserExisted.id,
+        sub:String(isUserExisted.id),
         role: isUserExisted.role,
       };
       const accessToken = this.tokenService.generateAccessToken(payload);
@@ -102,9 +103,27 @@ export class AuthController {
 
 
    
- async self(req:AuthRequest,res:Response,next:NextFunction){
-    const user = await this.userService.findById(+req.auth.id);
-    if(!user) next(createHttpError(400,"invalid"))
-    res.json({user})
- }
+ async self(req: AuthRequest, res: Response, next: NextFunction) {
+  try {
+    const userId = req.auth?.sub;
+
+    if (!userId) {
+      return next(createHttpError(401, "Unauthorized"));
+    }
+
+    const user = await this.userService.findById(userId);
+
+    if (!user) {
+      return next(createHttpError(404, "User not found"));
+    }
+
+    const { password, ...safeUser } = user;
+
+    return res.status(200).json({ user: safeUser });
+
+  } catch (error) {
+    next(error);
+  }
+}
+
 }

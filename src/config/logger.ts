@@ -1,5 +1,4 @@
 import winston from "winston";
-import { Config } from "./index.js";
 const logger = winston.createLogger({
   level: "debug",
   defaultMeta: {
@@ -11,14 +10,12 @@ const logger = winston.createLogger({
       dirname: "logs",
       filename: "app-log",
       format: winston.format.json(),
-      silent: Config.NODE_ENV === "development" ? true : false,
     }),
     new winston.transports.File({
       level: "error",
       dirname: "logs",
       filename: "error-log",
       format: winston.format.json(),
-      silent: Config.NODE_ENV === "development" ? true : false,
     }),
     new winston.transports.Console({
       level: "info",
@@ -26,7 +23,6 @@ const logger = winston.createLogger({
         winston.format.colorize(),
         winston.format.simple(),
       ),
-      silent: Config.NODE_ENV === "development" ? true : false,
     }),
   ],
 });

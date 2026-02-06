@@ -3,6 +3,9 @@ import jwksRsa from "jwks-rsa";
 import type { Request } from "express";
 import { Config } from "../config/index.js";
 
+if (!Config.JWKS_URI) {
+  throw new Error("JWKS_URI is not defined");
+}
 export default expressjwt({
   secret: jwksRsa.expressJwtSecret({
     jwksUri: Config.JWKS_URI,
