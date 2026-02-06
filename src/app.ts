@@ -1,13 +1,17 @@
+ 
 import "reflect-metadata";
 import express, { type NextFunction ,type Response,type Request} from "express";
 import logger from "./config/logger.js";
 import type { HttpError } from "http-errors";
 import router from "./routes/auth.js";
+import cookieParser from "cookie-parser";
+
 const app = express();
 app.get("/", (req, res) => {
     res.send("<h1>Welcome to the Auth Service</h1>");
 });
 
+app.use(cookieParser())
 app.use(express.json());
 app.use("/api/auth",router)
 // Error handling middleware

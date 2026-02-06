@@ -63,4 +63,11 @@ export class UserService {
       throw createHttpError(500, "Something went wrong");
     }
   }
+  async findById(id:number){
+    return await this.userRepository.findOne({
+      where:{
+        id
+      }
+    })
+  }
 }

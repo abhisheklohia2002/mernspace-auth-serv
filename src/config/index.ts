@@ -20,5 +20,6 @@ export const Config = {
   DB_NAME: process.env.DB_NAME,
   NODE_ENV: process.env.NODE_ENV,
   PORT: process.env.PORT,
-  SECRET_KEY:process.env.REFRESH_TOKEN_SECRET
+  SECRET_KEY:process.env.REFRESH_TOKEN_SECRET,
+  JWKS_URI:process.env.JWKS_URI
 };

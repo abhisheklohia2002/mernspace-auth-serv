@@ -1,3 +1,4 @@
+
 import express, {
   type NextFunction,
   type Request,
@@ -12,6 +13,8 @@ import { registerValidator } from "../validators/register.js";
 import TokenService from "../services/TokenService.js";
 import { RefreshToken } from "../entity/RefreshToken.js";
 import { loginValidator } from "../validators/login.js";
+import authenications from "../middleware/authenications.js";
+import type { AuthRequest } from "../types/index.js";
 
 const router = express.Router();
 const refreshTokenRepository = AppDataSource.getRepository(RefreshToken);
@@ -31,5 +34,10 @@ router.post(
   loginValidator,
   (req: Request, res: Response, next: NextFunction) =>
     authController.login(req, res, next)
+);
+router.get(
+  "/self",authenications,
+  (req: Request, res: Response, next: NextFunction) =>
+    authController.self(req as AuthRequest, res, next)
 );
 export default router;

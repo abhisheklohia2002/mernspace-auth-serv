@@ -1,5 +1,5 @@
 import { type NextFunction, type Response } from "express";
-import type { RegisterRequestBody } from "../types/index.js";
+import type { AuthRequest, RegisterRequestBody } from "../types/index.js";
 import type { UserService } from "../services/userService.js";
 import type { Logger } from "winston";
 import createHttpError from "http-errors";
@@ -99,4 +99,12 @@ export class AuthController {
       
     } 
   }
+
+
+   
+ async self(req:AuthRequest,res:Response,next:NextFunction){
+    const user = await this.userService.findById(+req.auth.id);
+    if(!user) next(createHttpError(400,"invalid"))
+    res.json({user})
+ }
 }
