@@ -1,6 +1,7 @@
+ 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { type NextFunction, type Response } from "express";
-import type { AuthRequest, RegisterRequestBody } from "../types/index.js";
+import type { AuthRequest, RefreshTokenRequest, RegisterRequestBody } from "../types/index.js";
 import type { UserService } from "../services/userService.js";
 import type { Logger } from "winston";
 import createHttpError from "http-errors";
@@ -72,12 +73,13 @@ export class AuthController {
       const isUserExisted = await this.userService.loginUser(req.body);
       const payload: JwtPayload = {
         email,
-        sub:String(isUserExisted.id),
+        sub: String(isUserExisted.id),
         role: isUserExisted.role,
       };
       const accessToken = this.tokenService.generateAccessToken(payload);
+      const newRefeshToken =
+        await this.tokenService.persistRefreshToken(isUserExisted);
 
-      const newRefeshToken = await this.tokenService.persistRefreshToken(isUserExisted);
       const refreshToken = this.tokenService.generateRefreshToken(
         payload,
         String(newRefeshToken.id),
@@ -97,33 +99,73 @@ export class AuthController {
       res.status(200).json({ message: "login successfully" });
     } catch (error: unknown) {
       return next(error);
-      
-    } 
+    }
   }
 
+  async self(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const userId = req.auth?.sub;
 
-   
- async self(req: AuthRequest, res: Response, next: NextFunction) {
+      if (!userId) {
+        return next(createHttpError(401, "Unauthorized"));
+      }
+
+      const user = await this.userService.findById(userId);
+
+      if (!user) {
+        return next(createHttpError(404, "User not found"));
+      }
+
+      const { password, ...safeUser } = user;
+
+      return res.status(200).json({ user: safeUser });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+ async refreshToken(req: RefreshTokenRequest, res: Response, next: NextFunction) {
   try {
-    const userId = req.auth?.sub;
+    // express-jwt puts decoded payload here
+    const auth = req.auth;
 
-    if (!userId) {
-      return next(createHttpError(401, "Unauthorized"));
+    const userId = auth?.sub;     
+    const email = auth?.email;
+    const jti = auth?.jti;        
+
+    if (!userId || !jti) {
+      throw createHttpError(401, "Invalid refresh token payload");
     }
+    await this.tokenService.deleteRefreshToken(Number(jti));
 
-    const user = await this.userService.findById(userId);
+    const user = await this.userService.findById(Number(userId));
+    if (!user) throw createHttpError(404, "User not found");
+    const payload: JwtPayload = {
+      email,
+      sub: String(user.id),
+      role: user.role,
+    };
+    const accessToken = this.tokenService.generateAccessToken(payload);
+    const newDbToken = await this.tokenService.persistRefreshToken(user);
+    const newRefreshJwt = this.tokenService.generateRefreshToken(payload, String(newDbToken.id));
 
-    if (!user) {
-      return next(createHttpError(404, "User not found"));
-    }
+    res.cookie("accessToken", accessToken, {
+      domain: "localhost",
+      sameSite: "strict",
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60,
+    });
 
-    const { password, ...safeUser } = user;
+    res.cookie("refreshToken", newRefreshJwt, {
+      domain: "localhost",
+      sameSite: "strict",
+      httpOnly: true,
+      maxAge: 1000 * 60 * 60 * 24 * 365,
+    });
 
-    return res.status(200).json({ user: safeUser });
-
+    return res.status(200).json({ message: "Token refreshed" });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 }
-
 }

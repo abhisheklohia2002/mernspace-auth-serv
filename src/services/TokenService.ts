@@ -40,8 +40,12 @@ export default class TokenService {
     const MS_IN_YEAR = 1000 * 60 * 60 * 24 * 365;
 
     return this.refreshTokenRepository.save({
-      user,
+      userId: user,
       expiresAt: new Date(Date.now() + MS_IN_YEAR),
     });
+  }
+   async deleteRefreshToken(id:number)
+  {
+    return await this.refreshTokenRepository.delete({id})
   }
 }

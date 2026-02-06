@@ -14,7 +14,8 @@ import TokenService from "../services/TokenService.js";
 import { RefreshToken } from "../entity/RefreshToken.js";
 import { loginValidator } from "../validators/login.js";
 import authenications from "../middleware/authenications.js";
-import type { AuthRequest } from "../types/index.js";
+import type { AuthRequest, RefreshTokenRequest } from "../types/index.js";
+import validateRefreshToken from "../middleware/validateRefreshToken.js";
 
 const router = express.Router();
 const refreshTokenRepository = AppDataSource.getRepository(RefreshToken);
@@ -39,5 +40,11 @@ router.get(
   "/self",authenications,
   (req: Request, res: Response, next: NextFunction) =>
     authController.self(req as AuthRequest, res, next)
+);
+
+router.post(
+  "/refreshToken",validateRefreshToken,
+  (req: Request, res: Response,next:NextFunction) =>
+    authController.refreshToken(req as RefreshTokenRequest, res,next)
 );
 export default router;
