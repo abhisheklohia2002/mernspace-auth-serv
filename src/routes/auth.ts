@@ -22,7 +22,7 @@ const router = express.Router();
 const refreshTokenRepository = AppDataSource.getRepository(RefreshToken);
 const tokenService = new TokenService(refreshTokenRepository)
 const userRepository = AppDataSource.getRepository(User);
-const userService = new UserService(userRepository);
+export const userService = new UserService(userRepository);
 const authController = new AuthController(userService, logger,tokenService);
 
 router.post(

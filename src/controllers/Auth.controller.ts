@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+ 
 import { type NextFunction, type Response } from "express";
 import type {
   AuthRequest,
@@ -119,9 +119,7 @@ export class AuthController {
         return next(createHttpError(404, "User not found"));
       }
 
-      const { password, ...safeUser } = user;
-
-      return res.status(200).json({ user: safeUser });
+      return res.status(200).json({ user: user });
     } catch (error) {
       next(error);
     }

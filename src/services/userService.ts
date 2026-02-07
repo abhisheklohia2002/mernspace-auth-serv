@@ -71,5 +71,22 @@ export class UserService {
     })
   }
 
+
+  async getUsers(){
+    return await this.userRepository.find({})
+  }
+  async getUserById(id:number){
+    return await this.userRepository.findOneBy({id})
+  }
+
+  async updateUserById(id:number,body:UserData){
+      const user = await this.userRepository.update(id,body);
+      return user
+  }
+
+  async deleteUserById(id:number){
+    return this.userRepository.delete(id)
+  }
+
  
 }
