@@ -1,7 +1,6 @@
-
 import express, {
   type NextFunction,
-//   type NextFunction,
+  //   type NextFunction,
   type Request,
   type Response,
 } from "express";
@@ -13,12 +12,49 @@ import authenications from "../middleware/authenications.js";
 import { canAccess } from "../middleware/canAccess.js";
 import { UserRole } from "../constants/index.js";
 
+const tenantRouter = express.Router();
+const tenantRepository = AppDataSource.getRepository(Tenant);
+const tenantService = new TenantService(tenantRepository);
+const tenantController = new TenantController(tenantService);
 
+tenantRouter.post(
+  "/",
+  authenications,
+  canAccess([UserRole.ADMIN]),
+  (req: Request, res: Response, next: NextFunction) =>
+    tenantController.create(req, res, next),
+);
 
-const tenantRouter  = express.Router();
-const tenantRepository = AppDataSource.getRepository(Tenant)
-const tenantService = new TenantService(tenantRepository)
-const tenantController = new TenantController(tenantService)
-tenantRouter.post("/",authenications,canAccess([UserRole.ADMIN]),(req:Request,res:Response,next:NextFunction)=>tenantController.create(req,res,next))
+tenantRouter.get(
+  "/:id",
+  authenications,
+  canAccess([UserRole.ADMIN]),
+  (req: Request, res: Response, next: NextFunction) =>
+    tenantController.getTenantById(req, res, next),
+);
+
+tenantRouter.get(
+  "/",
+  authenications,
+  canAccess([UserRole.ADMIN]),
+  (req: Request, res: Response, next: NextFunction) =>
+    tenantController.getTenants(req, res, next),
+);
+
+tenantRouter.put(
+  "/:id",
+  authenications,
+  canAccess([UserRole.ADMIN]),
+  (req: Request, res: Response, next: NextFunction) =>
+    tenantController.updateTenantById(req, res, next),
+);
+
+tenantRouter.delete(
+  "/:id",
+  authenications,
+  canAccess([UserRole.ADMIN]),
+  (req: Request, res: Response, next: NextFunction) =>
+    tenantController.deleteTenantById(req, res, next),
+);
 
 export default tenantRouter;
