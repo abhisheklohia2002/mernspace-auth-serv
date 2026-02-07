@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
+import "reflect-metadata";
 import app from "./app.js";
 import { AppDataSource } from "./config/data-source.js";
 import { Config } from "./config/index.js";

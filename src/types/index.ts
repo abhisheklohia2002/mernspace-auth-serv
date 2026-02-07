@@ -39,3 +39,9 @@ export interface RefreshTokenRequest extends Request {
     sub?: string;
   };
 }
+
+
+export interface ITenant  {
+  name:string,
+  address:string
+}
