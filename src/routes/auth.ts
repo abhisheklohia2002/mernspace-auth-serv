@@ -6,7 +6,7 @@ import express, {
 } from "express";
 import { AuthController } from "../controllers/Auth.controller.js";
 import { UserService } from "../services/userService.js";
-import { AppDataSource } from "../config/data-source.js";
+import  {AppDataSource}  from "../config/data-source.js";
 import { User } from "../entity/User.js";
 import logger from "../config/logger.js";
 import { registerValidator } from "../validators/register.js";
@@ -16,6 +16,7 @@ import { loginValidator } from "../validators/login.js";
 import authenications from "../middleware/authenications.js";
 import type { AuthRequest, RefreshTokenRequest } from "../types/index.js";
 import validateRefreshToken from "../middleware/validateRefreshToken.js";
+import parseRefreshToken from "../middleware/parseRefreshToken.js";
 
 const router = express.Router();
 const refreshTokenRepository = AppDataSource.getRepository(RefreshToken);
@@ -46,5 +47,11 @@ router.post(
   "/refreshToken",validateRefreshToken,
   (req: Request, res: Response,next:NextFunction) =>
     authController.refreshToken(req as RefreshTokenRequest, res,next)
+);
+
+router.post(
+  "/logout",parseRefreshToken,
+  (req: Request, res: Response,next:NextFunction) =>
+    authController.logout(req as RefreshTokenRequest, res,next)
 );
 export default router;

@@ -3,7 +3,7 @@ import { expressjwt } from "express-jwt";
 import { Config } from "../config/index.js";
 import type { Request } from "express";
 import type { AuthCookie, IRefreshTokenPayload } from "../types/index.js";
-import { AppDataSource } from "../config/data-source.js";
+import  {AppDataSource}  from "../config/data-source.js";
 import { RefreshToken } from "../entity/RefreshToken.js";
 import logger from "../config/logger.js";
 
@@ -25,8 +25,8 @@ export default expressjwt({
 
     const payload = token?.payload as IRefreshTokenPayload;
 
-    const jti = payload?.jti; // refresh token row id (from jwtid)
-    const sub = payload?.sub; // user id (string)
+    const jti = payload?.jti; 
+    const sub = payload?.sub; 
 
     if (!jti) return true;
 
@@ -35,16 +35,13 @@ export default expressjwt({
         id: Number(jti),
         ...(sub ? { userId: { id: Number(sub) } } : {}),
       },
-      // relations not required for nested where, but ok if you want:
-      // relations: { userId: true },
     });
 
     if (!dbToken) return true;
 
-    // optional: DB expiry check
     if (dbToken.expiresAt && dbToken.expiresAt.getTime() < Date.now()) return true;
 
-    return false; // ✅ not revoked
+    return false;
   } catch (error: unknown) {
     logger.error("refresh token revoke check failed", { error });
     return true;
