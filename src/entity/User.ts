@@ -2,12 +2,14 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
 import { UserRole } from "../constants/index.js";
+import { Tenant } from "./Tenants.js";
 
-@Entity()
+@Entity({name:"users"})
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
@@ -26,6 +28,9 @@ export class User {
 
   @Column({ type: "varchar", enum: UserRole })
   role: string;
+  
+  @ManyToOne(()=>Tenant)
+  tenantId:Tenant
 
   @UpdateDateColumn()
   updateAt: number;
