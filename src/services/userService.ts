@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import type { Repository } from "typeorm";
 import { User } from "../entity/User.js";
 import type { UserData } from "../types/index.js";
@@ -18,7 +19,7 @@ export class UserService {
     return isvalid;
   }
 
-  async createUser({ firstName, lastName, email, password, role }: UserData) {
+  async createUser({ firstName, lastName, email, password, role,tenantId }: UserData) {
     try {
       const isUserExist = await this.userRepository.findOne({
         where: { email },
@@ -26,12 +27,14 @@ export class UserService {
       if (isUserExist) {
         throw createHttpError(400, "Email already exists");
       }
+     
       const user = await this.userRepository.save({
         firstName,
         lastName,
         email,
         password: await this.hashPassword(password),
         role,
+        ...(tenantId ? { tenant: { id: tenantId } } : {}),
       });
       return user;
     } catch (error: unknown) {
@@ -41,6 +44,27 @@ export class UserService {
       throw createHttpError(500, "Failed to store data into the database");
     }
   }
+
+  async findByEmailWithPassword({ email, password }: loginUser) {
+  const user = await this.userRepository.findOne({
+    where: { email },
+    select: ["id", "firstName", "lastName", "email", "role", "password"],
+  });
+
+  if (!user) {
+    throw createHttpError(400, "invalid user");
+  }
+
+  const isPasswordValid = await this.comparePassword(user.password, password);
+  if (!isPasswordValid) {
+    throw createHttpError(404, "invalid credential");
+  }
+
+  const { password: _pw, ...safeUser } = user;
+  return user;
+}
+
+
 
   async loginUser({ email, password }: loginUser) {
     try {

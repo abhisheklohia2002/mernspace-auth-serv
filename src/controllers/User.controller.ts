@@ -5,10 +5,20 @@ import type {
 } from "express-serve-static-core";
 import type { UserService } from "../services/userService.js";
 import createHttpError from "http-errors";
-import type { UserData } from "../types/index.js";
-
+import type { CreateUserRequest, UserData } from "../types/index.js";
 class UserController {
   constructor(private userService: UserService) {}
+
+  async create(req: CreateUserRequest, res: Response, next: NextFunction) {
+    const data = { ...req.body };
+    try {
+      const user = await this.userService.createUser(data);
+      res.status(201).json({ id: user.id });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async getUsers(req: Request, res: Response, next: NextFunction) {
     const users = await this.userService.getUsers();
     if (!users) {
@@ -41,13 +51,13 @@ class UserController {
     res.status(201).json({ msg: user });
   }
 
-  async deleteUserById(req: Request, res: Response, next: NextFunction){
-    const {id} = req.params
-     if (!Number(id)) {
+  async deleteUserById(req: Request, res: Response, next: NextFunction) {
+    const { id } = req.params;
+    if (!Number(id)) {
       next(createHttpError(404, "UserId is missing"));
     }
     const userId = await this.userService.deleteUserById(Number(id));
-    res.status(201).json({userId})
+    res.status(201).json({ userId });
   }
 }
 
