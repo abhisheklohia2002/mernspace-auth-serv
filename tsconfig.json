@@ -44,6 +44,9 @@
     "experimentalDecorators": true,
     "strictPropertyInitialization": false
   },
-  // "include": ["src/**/*.ts"],
-  // "exclude": ["tests", "**/*.spec.ts", "**/*.test.ts"]
+  "include": ["src/**/*.ts"],
+    "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }

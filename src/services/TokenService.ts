@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 import fs from "fs";
 import jwt, { type JwtPayload } from "jsonwebtoken";
 import path from "path";
