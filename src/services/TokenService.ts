@@ -1,25 +1,20 @@
 /* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
-import fs from "fs";
 import jwt, { type JwtPayload } from "jsonwebtoken";
-import path from "path";
-import { fileURLToPath } from "url";
 import { AuthService } from "../constants/index.js";
 import { Config } from "../config/index.js";
 import { RefreshToken } from "../entity/RefreshToken.js";
 import type { User } from "../entity/User.js";
 import type { Repository } from "typeorm";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import createHttpError from "http-errors";
 
 export default class TokenService {
   constructor(private refreshTokenRepository: Repository<RefreshToken>) {}
 
   generateAccessToken(payload: JwtPayload) {
-    const privateKey = fs.readFileSync(
-      path.join(__dirname, "../../certs/private.pem"),
-      "utf-8"
-    );
+    if(!Config.PRIVATE_KEY){
+      throw createHttpError(500,"PRIVATE_KEY missing")
+    }
+    const privateKey = Config.PRIVATE_KEY
 
     return jwt.sign(payload, privateKey, {
       algorithm: "RS256",
