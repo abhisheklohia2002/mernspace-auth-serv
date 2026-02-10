@@ -11,7 +11,7 @@ import createHttpError from "http-errors";
 import { validationResult } from "express-validator";
 import type TokenService from "../services/TokenService.js";
 import type { JwtPayload } from "jsonwebtoken";
-import { UserRole } from "../constants/index.js";
+
 export class AuthController {
   constructor(
     private readonly userService: UserService,
@@ -23,7 +23,6 @@ export class AuthController {
     if (!result.isEmpty()) {
       return res.status(400).json({ error: result.array() });
     }
-    console.log(req.body,'sfsf')
     const { firstName, lastName, email, role, password } = req.body;
     if (!email) {
       const error = createHttpError(400, "Email is required");
@@ -37,7 +36,7 @@ export class AuthController {
       role,
       password,
     });
-       const data = { ...req.body, role: UserRole.CUSTOMER };
+       const data = { ...req.body };
     try {
       const user = await this.userService.createUser(data);
       this.logger.info(`User has been Registerd`, { user });
