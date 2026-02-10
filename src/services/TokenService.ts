@@ -1,3 +1,4 @@
+ 
 /* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
 import jwt, { type JwtPayload } from "jsonwebtoken";
 import { AuthService } from "../constants/index.js";
@@ -6,16 +7,22 @@ import { RefreshToken } from "../entity/RefreshToken.js";
 import type { User } from "../entity/User.js";
 import type { Repository } from "typeorm";
 import createHttpError from "http-errors";
-
+import path from "path";
+import fs from "fs";
 export default class TokenService {
   constructor(private refreshTokenRepository: Repository<RefreshToken>) {}
 
-  generateAccessToken(payload: JwtPayload) {
-    if(!Config.PRIVATE_KEY){
-      throw createHttpError(500,"PRIVATE_KEY missing")
-    }
-    const privateKey = Config.PRIVATE_KEY
+  getPrivateKey(): string {
+    const keyPath = path.resolve(process.cwd(), "certs", "private.pem");
 
+    if (!fs.existsSync(keyPath)) {
+      throw createHttpError(500, `Private key not found at: ${keyPath}`);
+    }
+
+    return fs.readFileSync(keyPath, "utf8");
+  }
+  generateAccessToken(payload: JwtPayload) {
+    const privateKey = this.getPrivateKey();
     return jwt.sign(payload, privateKey, {
       algorithm: "RS256",
       expiresIn: "1h",
@@ -40,8 +47,7 @@ export default class TokenService {
       expiresAt: new Date(Date.now() + MS_IN_YEAR),
     });
   }
-   async deleteRefreshToken(id:number)
-  {
-    return await this.refreshTokenRepository.delete({id})
+  async deleteRefreshToken(id: number) {
+    return await this.refreshTokenRepository.delete({ id });
   }
 }

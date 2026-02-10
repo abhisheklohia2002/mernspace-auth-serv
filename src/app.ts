@@ -1,9 +1,4 @@
- 
- 
- 
- 
- 
- 
+
 import "reflect-metadata";
 import express, { type NextFunction ,type Response,type Request} from "express";
 import logger from "./config/logger.js";
@@ -14,10 +9,15 @@ import path from "path";
 import { fileURLToPath } from "url";
 import tenantRouter from "./routes/tenants.js";
 import userRouter from "./routes/user.js";
-
+import cors from "cors";
+import { Config } from "./config/index.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const app = express();
+app.use(cors({
+    origin:[Config.FRONTEND_ADMIN_DOMAIN],
+    credentials:true
+}))
 app.use(express.json());
  
 app.use(cookieParser())

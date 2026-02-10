@@ -52,5 +52,6 @@ export const Config = {
 
   SECRET_KEY: required("REFRESH_TOKEN_SECRET"),
   JWKS_URI: optional("JWKS_URI"),
-  PRIVATE_KEY:optional("PRIVATE_KEY")
+  PRIVATE_KEY:optional("PRIVATE_KEY"),
+  FRONTEND_ADMIN_DOMAIN:required("FRONTEND_ADMIN_DOMAIN")
 } as const;
