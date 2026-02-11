@@ -2,6 +2,7 @@
 import express, {
   type NextFunction,
   type Request,
+  type RequestHandler,
   type Response,
 } from "express";
 import { AuthController } from "../controllers/Auth.controller.js";
@@ -16,6 +17,7 @@ import { loginValidator } from "../validators/login.js";
 import type { AuthRequest, RefreshTokenRequest } from "../types/index.js";
 import validateRefreshToken from "../middleware/validateRefreshToken.js";
 import parseRefreshToken from "../middleware/parseRefreshToken.js";
+import authenications from "../middleware/authenications.js";
 
 const router = express.Router();
 const refreshTokenRepository = AppDataSource.getRepository(RefreshToken);
@@ -37,7 +39,7 @@ router.post(
     authController.login(req, res, next)
 );
 router.get(
-  "/self",parseRefreshToken,
+  "/self",authenications as RequestHandler,
   (req: Request, res: Response, next: NextFunction) =>
     authController.self(req as AuthRequest, res, next)
 );
