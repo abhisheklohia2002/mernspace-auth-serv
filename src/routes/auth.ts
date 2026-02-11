@@ -13,7 +13,6 @@ import { registerValidator } from "../validators/register.js";
 import TokenService from "../services/TokenService.js";
 import { RefreshToken } from "../entity/RefreshToken.js";
 import { loginValidator } from "../validators/login.js";
-import authenications from "../middleware/authenications.js";
 import type { AuthRequest, RefreshTokenRequest } from "../types/index.js";
 import validateRefreshToken from "../middleware/validateRefreshToken.js";
 import parseRefreshToken from "../middleware/parseRefreshToken.js";
@@ -38,7 +37,7 @@ router.post(
     authController.login(req, res, next)
 );
 router.get(
-  "/self",authenications,
+  "/self",parseRefreshToken,
   (req: Request, res: Response, next: NextFunction) =>
     authController.self(req as AuthRequest, res, next)
 );
