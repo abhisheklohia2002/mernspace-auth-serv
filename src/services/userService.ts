@@ -4,6 +4,7 @@ import { User } from "../entity/User.js";
 import type { IValidateQuery, UserData } from "../types/index.js";
 import createHttpError from "http-errors";
 import bcrypt from "bcrypt";
+import { Brackets } from "typeorm";
 interface loginUser {
   email: string;
   password: string;
@@ -103,14 +104,32 @@ export class UserService {
     });
   }
 
-  async getUsers(validateQuery: IValidateQuery) {
-    const queryBuilder = this.userRepository.createQueryBuilder();
-    const result = await queryBuilder
-      .skip((validateQuery.currentPage - 1) * validateQuery.perPage)
-      .take(validateQuery.perPage)
-      .getManyAndCount();
-    return result
+async getUsers(validateQuery: IValidateQuery) {
+  const qb = this.userRepository.createQueryBuilder("user");
+
+  if (validateQuery.q?.trim()) {
+    const q = `%${validateQuery.q.trim()}%`;
+
+    qb.andWhere(
+      new Brackets((sqb) => {
+        sqb.where(`CONCAT("user"."firstName", ' ', "user"."lastName") ILIKE :q`, { q })
+           .orWhere(`"user"."email" ILIKE :q`, { q });
+      })
+    );
   }
+
+  if (validateQuery.role) {
+    qb.andWhere(`"user"."role" = :role`, { role: validateQuery.role });
+  }
+
+  const result = await qb
+    .skip((validateQuery.currentPage - 1) * validateQuery.perPage)
+    .take(validateQuery.perPage)
+    .getManyAndCount();
+
+  return result;
+}
+
   async getUserById(id: number) {
     return await this.userRepository.findOneBy({ id });
   }

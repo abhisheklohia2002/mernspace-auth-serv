@@ -53,4 +53,6 @@ export interface CreateUserRequest extends Request {
 export interface IValidateQuery {
   currentPage: number;
   perPage: number;
+  q:string,
+  role:string
 }
