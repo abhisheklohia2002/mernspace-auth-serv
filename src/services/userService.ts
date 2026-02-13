@@ -104,31 +104,36 @@ export class UserService {
     });
   }
 
-async getUsers(validateQuery: IValidateQuery) {
-  const qb = this.userRepository.createQueryBuilder("user");
+  async getUsers(validateQuery: IValidateQuery) {
+    const qb = this.userRepository.createQueryBuilder("user");
 
-  if (validateQuery.q?.trim()) {
-    const q = `%${validateQuery.q.trim()}%`;
+    if (validateQuery.q?.trim()) {
+      const q = `%${validateQuery.q.trim()}%`;
 
-    qb.andWhere(
-      new Brackets((sqb) => {
-        sqb.where(`CONCAT("user"."firstName", ' ', "user"."lastName") ILIKE :q`, { q })
-           .orWhere(`"user"."email" ILIKE :q`, { q });
-      })
-    );
+      qb.andWhere(
+        new Brackets((sqb) => {
+          sqb
+            .where(
+              `CONCAT("user"."firstName", ' ', "user"."lastName") ILIKE :q`,
+              { q },
+            )
+            .orWhere(`"user"."email" ILIKE :q`, { q });
+        }),
+      );
+    }
+
+    if (validateQuery.role) {
+      qb.andWhere(`"user"."role" = :role`, { role: validateQuery.role });
+    }
+
+    const result = await qb
+      .leftJoinAndSelect("user.tenant", "tenant")
+      .skip((validateQuery.currentPage - 1) * validateQuery.perPage)
+      .take(validateQuery.perPage)
+      .getManyAndCount();
+    
+    return result;
   }
-
-  if (validateQuery.role) {
-    qb.andWhere(`"user"."role" = :role`, { role: validateQuery.role });
-  }
-
-  const result = await qb
-    .skip((validateQuery.currentPage - 1) * validateQuery.perPage)
-    .take(validateQuery.perPage)
-    .getManyAndCount();
-
-  return result;
-}
 
   async getUserById(id: number) {
     return await this.userRepository.findOneBy({ id });
