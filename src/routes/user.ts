@@ -10,6 +10,7 @@ import { UserRole } from "../constants/index.js";
 import { UserService } from "../services/userService.js";
 import { AppDataSource } from "../config/data-source.js";
 import { User } from "../entity/User.js";
+import listUserValidator from "../validators/list-user-validator.js";
 const userRouter = express.Router();
 const userRepository = AppDataSource.getRepository(User)
 const userService = new UserService(userRepository)
@@ -18,6 +19,7 @@ userRouter.get(
   "/",
   authenications,
   canAccess([UserRole.ADMIN]),
+  listUserValidator,
   (req: Request, res: Response, next: NextFunction) =>
     userController.getUsers(req, res, next),
 );

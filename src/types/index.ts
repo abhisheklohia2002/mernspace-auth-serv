@@ -49,3 +49,8 @@ export interface ITenant {
 export interface CreateUserRequest extends Request {
   body: UserData;
 }
+
+export interface IValidateQuery {
+  currentPage: number;
+  perPage: number;
+}

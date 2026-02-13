@@ -5,7 +5,12 @@ import type {
 } from "express-serve-static-core";
 import type { UserService } from "../services/userService.js";
 import createHttpError from "http-errors";
-import type { CreateUserRequest, UserData } from "../types/index.js";
+import type {
+  CreateUserRequest,
+  IValidateQuery,
+  UserData,
+} from "../types/index.js";
+import { matchedData } from "express-validator";
 class UserController {
   constructor(private userService: UserService) {}
 
@@ -20,11 +25,21 @@ class UserController {
   }
 
   async getUsers(req: Request, res: Response, next: NextFunction) {
-    const users = await this.userService.getUsers();
-    if (!users) {
+    const validateQuery: IValidateQuery = matchedData(req, {
+      onlyValidData: true,
+    });
+    const [data, count] = await this.userService.getUsers(validateQuery);
+    if (!data) {
       next(createHttpError(401, "user table is empty"));
     }
-    res.status(201).json({ msg: users });
+    res
+      .status(201)
+      .json({
+        data,
+        count,
+        currentPage: validateQuery.currentPage,
+        perPage: validateQuery.perPage,
+      });
   }
 
   async getUserById(req: Request, res: Response, next: NextFunction) {
