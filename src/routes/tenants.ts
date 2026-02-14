@@ -11,6 +11,7 @@ import { AppDataSource } from "../config/data-source.js";
 import authenications from "../middleware/authenications.js";
 import { canAccess } from "../middleware/canAccess.js";
 import { UserRole } from "../constants/index.js";
+import listTenantValidator from "../validators/list-tenant-validator.js";
 
 const tenantRouter = express.Router();
 const tenantRepository = AppDataSource.getRepository(Tenant);
@@ -36,6 +37,7 @@ tenantRouter.get(
 tenantRouter.get(
   "/",
   authenications,
+  listTenantValidator,
   canAccess([UserRole.ADMIN]),
   (req: Request, res: Response, next: NextFunction) =>
     tenantController.getTenants(req, res, next),

@@ -56,3 +56,9 @@ export interface IValidateQuery {
   q:string,
   role:string
 }
+
+export interface IValidateTenantQuery{
+   currentPage: number;
+  perPage: number;
+  q:string
+}

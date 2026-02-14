@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 import type { NextFunction, Request, Response } from "express";
 import type TenantService from "../services/Tenant.service.js";
-import type { ITenant } from "../types/index.js";
+import type { ITenant, IValidateTenantQuery } from "../types/index.js";
 import createHttpError from "http-errors";
+import { matchedData } from "express-validator";
 
 class TenantController {
   constructor(private tenantService: TenantService) {}
@@ -17,9 +18,19 @@ class TenantController {
   }
 
   async getTenants(req: Request, res: Response, next: NextFunction) {
+    const validateQuery: IValidateTenantQuery = matchedData(req, {
+      onlyValidData: true,
+    });
     try {
-      const tenants = await this.tenantService.getTenants();
-      res.status(201).json({ tenants });
+      const [data, count] = await this.tenantService.getTenants(validateQuery);
+      res
+        .status(201)
+        .json({
+          data,
+          count,
+          currentPage: validateQuery.currentPage,
+          perPage: validateQuery.perPage,
+        });
     } catch (error) {
       return next(error);
     }
@@ -55,20 +66,16 @@ class TenantController {
     }
   }
 
-  async deleteTenantById(req: Request, res: Response, next: NextFunction){
+  async deleteTenantById(req: Request, res: Response, next: NextFunction) {
     try {
-        const { id } = req.params;
-      const tenant = await this.tenantService.deleteTenantById(
-        Number(id)
-      );
+      const { id } = req.params;
+      const tenant = await this.tenantService.deleteTenantById(Number(id));
       if (!tenant) {
         return next(createHttpError(401, "ID is not present"));
       }
-      res.status(201).json({id});
-
+      res.status(201).json({ id });
     } catch (error) {
       return next(error);
-        
     }
   }
 }
