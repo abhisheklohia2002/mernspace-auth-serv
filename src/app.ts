@@ -1,10 +1,6 @@
 import "reflect-metadata";
-import express, {
-  type Response,
-  type Request,
-} from "express";
-import logger from "./config/logger.js";
-import type { HttpError } from "http-errors";
+import express from "express";
+
 import router from "./routes/auth.js";
 import cookieParser from "cookie-parser";
 import path from "path";
@@ -13,6 +9,7 @@ import tenantRouter from "./routes/tenants.js";
 import userRouter from "./routes/user.js";
 import cors from "cors";
 import { Config } from "./config/index.js";
+import { globalErrorHandler } from "./middleware/globalErrorHandler.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const app = express();
@@ -39,25 +36,6 @@ app.get("/", (req, res) => {
   res.send("<h1>Welcome to the Auth Service</h1>");
 });
 
-// Error handling middleware
- 
-
-app.use((err: HttpError, req: Request, res: Response) => {
-  logger.error(`Error occurred: ${err.message}`);
-  const statusCode = err.statusCode || 500;
-  if (err.name === "UnauthorizedError") {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
-  res.status(statusCode).json({
-    error: [
-      {
-        type: err.name,
-        message: err.message,
-        path: "",
-        location: "",
-      },
-    ],
-  });
-});
+app.use(globalErrorHandler)
 
 export default app;
