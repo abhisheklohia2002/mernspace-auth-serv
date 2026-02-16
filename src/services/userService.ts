@@ -57,6 +57,9 @@ export class UserService {
     const user = await this.userRepository.findOne({
       where: { email },
       select: ["id", "firstName", "lastName", "email", "role", "password"],
+      relations:{
+        tenant:true
+      }
     });
 
     if (!user) {
@@ -131,7 +134,7 @@ export class UserService {
       .skip((validateQuery.currentPage - 1) * validateQuery.perPage)
       .take(validateQuery.perPage)
       .getManyAndCount();
-    
+
     return result;
   }
 

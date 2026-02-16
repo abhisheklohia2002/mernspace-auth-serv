@@ -76,10 +76,12 @@ export class AuthController {
     try {
       const { email } = req.body;
       const isUserExisted = await this.userService.findByEmailWithPassword(req.body);
+      // console.log(isUserExisted,'isUserExisted')
       const payload: JwtPayload = {
         email,
         sub: String(isUserExisted.id),
         role: isUserExisted.role,
+        tenant:isUserExisted.tenant ?  isUserExisted.tenant?.id :''
       };
       const accessToken = this.tokenService.generateAccessToken(payload);
       const newRefeshToken =
